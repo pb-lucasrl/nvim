@@ -8,32 +8,36 @@ return {
     },
     lazy = false,
     config = function()
-        require("mason").setup({
-          ui = {
-            open_on_start = false,
-          },
-        })
-        require("mason-lspconfig").setup({
-          ensure_installed = { "jdtls", "lua_ls"}, -- Add more servers here as needed
-          ui = {
-            open_on_start = false
-          },
-        })
+      require("mason").setup({
+        ui = {
+          open_on_start = false,
+        },
+      })
 
+      require("mason-lspconfig").setup({
+        ensure_installed = { "jdtls", "lua_ls", "ts_ls" }, 
+      })
 
-        local lspconfig = require("lspconfig")
+      local lspconfig = require("lspconfig")
 
-        -- Default handler for servers
-        require("mason-lspconfig").setup_handlers({
-            function(server_name)
-              if server_name ~= 'jdtls' and server_name ~= 'lua_ls' then
-                lspconfig[server_name].setup({})
-              end
-              if server_name == 'lua_ls' then
-                require('config.lua-lsp')
-              end
-            end,
-        })
+      local servers = {
+        lua_ls = function()
+          require("config.lua-lsp")
+        end,
+        jdtls = function()
+          -- jdtls normalmente tem configuração especial, pode deixar vazio aqui
+        end,
+        -- adicione outros servers personalizados aqui
+      }
+
+      for _, server_name in ipairs(require("mason-lspconfig").get_installed_servers()) do
+        local custom = servers[server_name]
+        if custom then
+          custom()
+        else
+          lspconfig[server_name].setup({})
+        end
+      end
     end,
-  }
+  },
 }
