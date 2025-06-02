@@ -2,6 +2,14 @@
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+vim.diagnostic.config({
+  virtual_text = true, -- Shows inline error/warning text
+  signs = true,        -- Shows signs in the gutter
+  underline = true,    -- Underlines errors in code
+  update_in_insert = false,
+  severity_sort = true,
+})
+
 -- leader is getting mapped in the config.lua
 require("config.lazy")
 
